@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta content='text/html;charset=UTF-8' http-equiv='content-type' />
+    <title>Youtube Player</title>
+    <script src="jquery.js" type="text/javascript"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/swfobject/2.2/swfobject.js" type="text/javascript"></script>
+    <script type="text/javascript" charset="utf-8">
+ 
+  var params = { allowScriptAccess: "always" };
+      var atts = { id: "myytplayer" };
+      swfobject.embedSWF("http://www.youtube.com/v/z0pwu1iRdKI?enablejsapi=1&playerapiid=ytplayer&version=3", 
+                         "youtube", "425", "356", "8", null, null, params, atts);
+    
+function onYouTubePlayerReady(playerId) {
+ytplayer = document.getElementById("myytplayer");
+ytplayer.addEventListener("onStateChange","onPlayerStateChange");
+//player loaded
+//do some stuff here if you want!
+}
+function onPlayerStateChange(newState) {
+switch (newState) {
+case (YT.PlayerState.PLAYING):
+videoStarted();
+break;
+case (YT.PlayerState.PAUSED):
+if (lastPlayerState == YT.PlayerState.PLAYING) {
+videoWatched(lastPlayerTime, ytplayer.getCurrentTime())
+} else if (lastPlayerState == YT.PlayerState.PAUSED) {
+videoSkipped(lastPlayerTime, ytplayer.getCurrentTime());
+}
+videoPaused();
+break;
+case (YT.PlayerState.ENDED):
+videoEnded();
+break;
+case (YT.PlayerState.UNSTARTED):
+break;
+}
+lastPlayerTime = ytplayer.getCurrentTime();
+lastPlayerState = newState;
+}
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+var myTinCan = new TinCan();
+var myLRS = new TinCan.LRS({
+endpoint:"https://cloud.scorm.com/tc/JR85FW74UZ/",
+version: "1.0.0",
+auth: "Basic " + Base64.encode("JR85FW74UZ" + ":" + "BTZxA0acv9a2gYyEs2iLBnnSXO2uSMSmWkfifrJ1")
+});
+myTinCan.recordStores[0] = myLRS;
+//Set the default actor
+var myActor = new TinCan.Agent({
+name : "New User",
+mbox : "mailto:newuser@gmail.com"
+});
+myTinCan.actor = myActor;
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+$.getJSON("https://gdata.youtube.com/feeds/api/videos/z0pwu1iRdKI?v=2&alt=json",
+function (data) {
+console.log(data);
+videoTitle = data.entry.title.$t;
+//do some stuff here
+}
+);
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+function videoWatched(start, finish) {//start and finish in seconds
+myTinCan.sendStatement({
+actor : myActor,
+verb: {
+id: "http://activitystrea.ms/schema/1.0/watch",
+display: {"en-US": "watched"}
+},
+target: {
+id: "http://www.youtube.com/watch?v=z0pwu1iRdKI",
+definition: {
+name: { "en-US": videoTitle + " from " + timeString(start) + " to " + timeString(finish) },
+extensions: {
+"http://demo.watershedlrs.com/tincan/extensions/start_point": timeString(start),
+"http://demo.watershedlrs.com/tincan/extensions/end_point": timeString(finish)
+}
+}
+}
+});
+}
+     
+    </script>
+  </head>
+  <body>
+    <div id="youtube"></div>
+  </body>
+</html>
