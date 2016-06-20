@@ -1,8 +1,7 @@
-Original Prototypes
+примеры скриптов компонента аналитики
 ===================
 
-These are the original client prototypes produced
-with the LRS.
+Live Demo: "http://vladimirandropov.github.io/lrs/"
 
 ###config.js
 config.js is used to configure the LRS endpoint and user information. This file needs created. To do this, edit config.js.template
@@ -10,7 +9,7 @@ config.js is used to configure the LRS endpoint and user information. This file 
 example:
 ```javascript
 Config.endpoint = "http://localhost:8000/xapi/";
-Config.user = "tom";
+Config.user = "Andropov";
 Config.password = "1234";
-Config.actor = { "mbox": "tomcreighton@example.com", "name": "tom creighton" };
+Config.actor = { "mbox": "andropov@example.com", "name": "vladimir andropov" };
 ```
